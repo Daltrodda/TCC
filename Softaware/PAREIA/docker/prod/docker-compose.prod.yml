@@ -1,0 +1,107 @@
+version: '3.9'
+
+services:
+  frontend:
+    build:
+      context: ../../frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - gateway
+
+  gateway:
+    build:
+      context: ../../gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - ENV=production
+    depends_on:
+      - auth
+      - users
+      - ml
+
+  auth:
+    build:
+      context: ../../services/auth
+    ports:
+      - "8001:8001"
+    environment:
+      - ENV=production
+
+  users:
+    build:
+      context: ../../services/users
+    ports:
+      - "8002:8002"
+    environment:
+      - ENV=production
+
+  ml:
+    build:
+      context: ../../services/ml
+    ports:
+      - "8003:8003"
+    environment:
+      - ENV=production
+
+  postgres:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: appdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ../../monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - ../../monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+
+  nginx:
+    image: nginx:stable
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/certbot/www:/var/www/certbot
+      - ./nginx/certbot/conf:/etc/letsencrypt
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - frontend
+      - gateway
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./nginx/certbot/www:/var/www/certbot
+      - ./nginx/certbot/conf:/etc/letsencrypt
+    entrypoint: >
+      sh -c "certbot certonly --webroot -w /var/www/certbot
+      --email seu@email.com --agree-tos --no-eff-email
+      -d SEU_DOMINIO"
+
+  certbot-renew:
+    image: certbot/certbot
+    volumes:
+      - ./nginx/certbot/www:/var/www/certbot
+      - ./nginx/certbot/conf:/etc/letsencrypt
+    entrypoint: sh -c "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done"
+
+volumes:
+  postgres_data:
+  grafana_data:

@@ -19,3 +19,18 @@ export async function getProtectedData(token: string): Promise<any> {
   }
   return await response.json();
 }
+
+export async function predictML(token: string, feature1: number, feature2: number): Promise<any> {
+  const response = await fetch(`${API_GATEWAY}/predict`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ feature1, feature2 }),
+  });
+  if (!response.ok) {
+    throw new Error('Prediction failed');
+  }
+  return await response.json();
+}
