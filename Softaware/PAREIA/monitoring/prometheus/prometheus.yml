@@ -1,6 +1,19 @@
 global:
   scrape_interval: 15s
+
 scrape_configs:
   - job_name: 'gateway'
     static_configs:
       - targets: ['gateway:8000']
+
+  - job_name: 'auth'
+    static_configs:
+      - targets: ['auth:8001']
+
+  - job_name: 'users'
+    static_configs:
+      - targets: ['users:8002']
+
+  - job_name: 'ml'
+    static_configs:
+      - targets: ['ml:8003']
