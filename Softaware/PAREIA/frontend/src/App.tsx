@@ -1,84 +1,28 @@
 import React, { useState } from 'react';
-import { login, getProtectedData, predictML } from './api';
+import Login from './Login';
 
 function App() {
   const [token, setToken] = useState<string | null>(null);
-  const [users, setUsers] = useState<any[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [feature1, setFeature1] = useState('');
-  const [feature2, setFeature2] = useState('');
-  const [prediction, setPrediction] = useState<number | null>(null);
+  const [nome, setNome] = useState<string>('');
+  const [perfil, setPerfil] = useState<string>('');
 
-  const handleLogin = async () => {
-    try {
-      const jwt = await login();
-      setToken(jwt);
-      setError(null);
-    } catch (err) {
-      setError('Failed to login');
-    }
-  };
-
-  const fetchData = async () => {
-    if (!token) return;
-    try {
-      const data = await getProtectedData(token);
-      setUsers(data);
-      setError(null);
-    } catch (err) {
-      setError('Failed to fetch protected data');
-    }
-  };
-
-  const handlePredict = async () => {
-    if (!token) return;
-    try {
-      const result = await predictML(token, parseFloat(feature1), parseFloat(feature2));
-      setPrediction(result.prediction);
-      setError(null);
-    } catch (err) {
-      setError('Failed to get prediction');
-    }
+  const handleLogin = (newToken: string, nome: string, perfil: string) => {
+    setToken(newToken);
+    setNome(nome);
+    setPerfil(perfil);
   };
 
   return (
-    <div className="App">
-      <h1>Microservices Frontend</h1>
+    <div>
+      <h1>Painel PAREIA</h1>
       {!token ? (
-        <button onClick={handleLogin}>Login</button>
+        <Login onLogin={handleLogin} />
       ) : (
         <>
-          <p>Token: {token.slice(0, 20)}...</p>
-          <button onClick={fetchData}>Get Users</button>
+          <p>Bem-vindo, {nome}!</p>
+          <p>Perfil: {perfil}</p>
+          <p>Token: {token.slice(0, 10)}...</p>
         </>
-      )}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {users && (
-        <ul>
-          {users.map((u, i) => (
-            <li key={i}>{u.name}</li>
-          ))}
-        </ul>
-      )}
-
-      {token && (
-        <div style={{ marginTop: 20 }}>
-          <h2>ML Prediction</h2>
-          <input
-            type="number"
-            placeholder="Feature 1"
-            value={feature1}
-            onChange={(e) => setFeature1(e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="Feature 2"
-            value={feature2}
-            onChange={(e) => setFeature2(e.target.value)}
-          />
-          <button onClick={handlePredict}>Predict</button>
-          {prediction !== null && <p>Prediction: {prediction}</p>}
-        </div>
       )}
     </div>
   );
