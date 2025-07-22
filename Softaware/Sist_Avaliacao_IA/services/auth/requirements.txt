@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+sqlalchemy[asyncio]>=2.0
+asyncpg
+passlib[bcrypt]
+python-jose
+python-multipart
+python-dotenv
+aiosmtplib
+email-validator
