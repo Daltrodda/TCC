@@ -23,8 +23,11 @@ RUN npm install
 # Copia todos os arquivos do projeto
 COPY . .
 
+
+RUN npm run build
+
 # Expõe a porta padrão do Vite
 EXPOSE 5173
 
 # Comando para iniciar o frontend (modo dev, com acesso externo)
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--https", "--cert", "./cert/cert.pem", "--key", "./cert/key.pem"]
