@@ -4,6 +4,8 @@ services:
     build: ./gateway
     ports:
       - "8000:8000"
+    volumes:
+      - ./gateway/certs:/app/certs  # Corrigido caminho
     depends_on:
       - auth
     networks:
@@ -18,7 +20,7 @@ services:
     depends_on:
       - auth_db
     volumes:
-      - ./services/auth/cert:/app/cert  # Garante que os certificados estão no container
+      - ./services/auth/certs:/app/certs  # Corrigido caminho
     networks:
       - backend
 
@@ -38,6 +40,8 @@ services:
     build: ./frontend
     ports:
       - "5173:5173"
+    volumes:
+      - ./frontend/certs:/app/certs  # Corrigido caminho
     networks:
       - backend
       - frontend

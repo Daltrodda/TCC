@@ -12,7 +12,7 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # 4. Copiar o restante da aplicação
 COPY ./app ./app
-COPY ./cert ./cert
+COPY ./certs ./cert
 
 # 5. Comando padrão para rodar a API
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001", "--ssl-keyfile", "./cert/key.pem", "--ssl-certfile", "./cert/cert.pem"]

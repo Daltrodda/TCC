@@ -7,10 +7,14 @@ from app.routes import auth
 
 app = FastAPI()
 
+origins = [
+    "https://localhost:5173",  # frontend local via HTTPS
+]
+
 # Configuração do CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://localhost:5173"],  # ou ["*"] para testes
+    allow_origins= origins,  # ou ["*"] para testes
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -33,8 +37,8 @@ if __name__ == "__main__":
     import os
 
     base_path = os.path.dirname(__file__)
-    cert_path = os.path.join(base_path, "../cert/cert.pem")
-    key_path = os.path.join(base_path, "../cert/key.pem")
+    cert_path = os.path.join(base_path, "../certs/cert.pem")
+    key_path = os.path.join(base_path, "../certs/key.pem")
 
     ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     ssl_context.load_cert_chain(certfile=cert_path, keyfile=key_path)
@@ -46,3 +50,4 @@ if __name__ == "__main__":
         ssl_certfile=cert_path,
         ssl_keyfile=key_path
     )
+
